@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1685</width>
-    <height>897</height>
+    <width>1424</width>
+    <height>820</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,8 +32,8 @@
        <rect>
         <x>300</x>
         <y>170</y>
-        <width>381</width>
-        <height>411</height>
+        <width>281</width>
+        <height>361</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -421,7 +421,7 @@ QPushButton:hover {
      <widget class="QLabel" name="lblStatCircle">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>390</x>
         <y>620</y>
         <width>152</width>
         <height>152</height>
@@ -440,8 +440,8 @@ QPushButton:hover {
      <widget class="QTableWidget" name="tableWidget_3">
       <property name="geometry">
        <rect>
-        <x>690</x>
-        <y>280</y>
+        <x>590</x>
+        <y>210</y>
         <width>821</width>
         <height>301</height>
        </rect>
@@ -508,6 +508,9 @@ QScrollBar::handle:vertical:hover {
 }
 </string>
       </property>
+      <property name="columnCount">
+       <number>10</number>
+      </property>
       <row>
        <property name="text">
         <string/>
@@ -518,6 +521,11 @@ QScrollBar::handle:vertical:hover {
         <string/>
        </property>
       </row>
+      <column>
+       <property name="text">
+        <string>ID</string>
+       </property>
+      </column>
       <column>
        <property name="text">
         <string>Nom</string>
@@ -594,82 +602,87 @@ QScrollBar::handle:vertical:hover {
         <string>etat</string>
        </property>
       </column>
-      <item row="0" column="0">
+      <column>
+       <property name="text">
+        <string>action</string>
+       </property>
+      </column>
+      <item row="0" column="1">
        <property name="text">
         <string>ahmed</string>
        </property>
       </item>
-      <item row="0" column="1">
+      <item row="0" column="2">
        <property name="text">
         <string>Ben ali</string>
        </property>
       </item>
-      <item row="0" column="2">
+      <item row="0" column="3">
        <property name="text">
         <string>22123345</string>
        </property>
       </item>
-      <item row="0" column="3">
+      <item row="0" column="4">
        <property name="text">
         <string>Ahed@gmail.com</string>
        </property>
       </item>
-      <item row="0" column="4">
+      <item row="0" column="5">
        <property name="text">
         <string>12/01/2026</string>
        </property>
       </item>
-      <item row="0" column="5">
+      <item row="0" column="6">
        <property name="text">
         <string>fidele</string>
        </property>
       </item>
-      <item row="0" column="6">
+      <item row="0" column="7">
        <property name="text">
         <string>chef</string>
        </property>
       </item>
-      <item row="0" column="7">
+      <item row="0" column="8">
        <property name="text">
         <string>actif</string>
        </property>
       </item>
-      <item row="1" column="0">
+      <item row="1" column="1">
        <property name="text">
         <string>Sara</string>
        </property>
       </item>
-      <item row="1" column="1">
+      <item row="1" column="2">
        <property name="text">
         <string>trabelsi</string>
        </property>
       </item>
-      <item row="1" column="2">
+      <item row="1" column="3">
        <property name="text">
         <string>56435746</string>
        </property>
       </item>
-      <item row="1" column="3">
+      <item row="1" column="4">
        <property name="text">
         <string>Sara@gmail.com</string>
        </property>
       </item>
-      <item row="1" column="4">
+      <item row="1" column="5">
        <property name="text">
         <string>25/01/2026</string>
        </property>
       </item>
-      <item row="1" column="5">
+      <item row="1" column="6">
        <property name="text">
         <string>occasionnel</string>
        </property>
       </item>
-      <item row="1" column="6">
+      <item row="1" column="7">
        <property name="text">
         <string>ouvrier</string>
        </property>
       </item>
-      <item row="1" column="7">
+      <item row="1" column="8">
        <property name="text">
         <string>non actif</string>
        </property>
@@ -713,119 +726,11 @@ QScrollBar::handle:vertical:hover {
 background-color: #EFE6DA;</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnAjouter_3">
-      <property name="geometry">
-       <rect>
-        <x>1020</x>
-        <y>590</y>
-        <width>151</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
-    background-color:#a04f2f;
-    color: white;
-    border-radius: 10px;
-    padding: 6px;
-    font-weight: bold;
-}
-
-QPushButton:hover {
-    background-color: rgb(90, 140, 180);
-}
-
-QPushButton:pressed {
-    background-color: rgb(70, 120, 160);
-}
-</string>
-      </property>
-      <property name="text">
-       <string>Ajouter</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnSupprimer_3">
-      <property name="geometry">
-       <rect>
-        <x>1180</x>
-        <y>590</y>
-        <width>151</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
-    background-color: #a04f2f;
-    color: white;
-    border-radius: 10px;
-    padding: 6px;
-    font-weight: bold;
-}
-
-QPushButton:hover {
-    background-color: rgb(90, 140, 180);
-}
-
-QPushButton:pressed {
-    background-color: rgb(70, 120, 160);
-}
-</string>
-      </property>
-      <property name="text">
-       <string>Supprimer</string>
-      </property>
-      <property name="autoDefault">
-       <bool>false</bool>
-      </property>
-      <property name="default">
-       <bool>false</bool>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_8">
-      <property name="geometry">
-       <rect>
-        <x>1340</x>
-        <y>590</y>
-        <width>151</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
-    background-color: #a04f2f;
-    color: white;
-    border-radius: 10px;
-    padding: 6px;
-    font-weight: bold;
-}
-
-QPushButton:hover {
-    background-color: rgb(90, 140, 180);
-}
-
-QPushButton:pressed {
-    background-color: rgb(70, 120, 160);
-}
-</string>
-      </property>
-      <property name="text">
-       <string>Modifier</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pushButton_13">
       <property name="geometry">
        <rect>
-        <x>1400</x>
-        <y>90</y>
+        <x>1230</x>
+        <y>120</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -851,8 +756,8 @@ QPushButton:hover {
      <widget class="QLineEdit" name="lineEditSearch&#10;_2">
       <property name="geometry">
        <rect>
-        <x>710</x>
-        <y>220</y>
+        <x>650</x>
+        <y>130</y>
         <width>471</width>
         <height>41</height>
        </rect>
@@ -877,8 +782,8 @@ QPushButton:hover {
      <widget class="QComboBox" name="comboBox_4">
       <property name="geometry">
        <rect>
-        <x>1230</x>
-        <y>230</y>
+        <x>1150</x>
+        <y>170</y>
         <width>191</width>
         <height>31</height>
        </rect>
@@ -1072,164 +977,31 @@ background-color: #D6B48A;</string>
        <string>Paramètres</string>
       </property>
      </widget>
-     <widget class="QFrame" name="frame">
+     <widget class="QLabel" name="user_modify">
       <property name="geometry">
        <rect>
-        <x>390</x>
-        <y>80</y>
-        <width>291</width>
-        <height>71</height>
+        <x>1420</x>
+        <y>320</y>
+        <width>31</width>
+        <height>16</height>
        </rect>
       </property>
-      <property name="styleSheet">
-       <string notr="true">
-background-color: #EFE6DA;</string>
+      <property name="text">
+       <string/>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>161</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 700 14pt &quot;Arial&quot;;
-color: rgb(0, 0, 0);</string>
-       </property>
-       <property name="text">
-        <string>Utilisateurs total:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_4">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>25</y>
-         <width>49</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(0, 0, 0);</string>
-       </property>
-       <property name="text">
-        <string>45</string>
-       </property>
-      </widget>
      </widget>
-     <widget class="QFrame" name="frame_2">
+     <widget class="QLabel" name="user_delete">
       <property name="geometry">
        <rect>
-        <x>730</x>
-        <y>80</y>
-        <width>291</width>
-        <height>71</height>
+        <x>1460</x>
+        <y>320</y>
+        <width>31</width>
+        <height>16</height>
        </rect>
       </property>
-      <property name="styleSheet">
-       <string notr="true">
-background-color: #EFE6DA;</string>
+      <property name="text">
+       <string/>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>161</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 700 14pt &quot;Arial&quot;;
-color: rgb(0, 0, 0);</string>
-       </property>
-       <property name="text">
-        <string>Utilisateurs actif:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_6">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>20</y>
-         <width>49</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(0, 0, 0);</string>
-       </property>
-       <property name="text">
-        <string>35</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QFrame" name="frame_3">
-      <property name="geometry">
-       <rect>
-        <x>1080</x>
-        <y>80</y>
-        <width>281</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">
-background-color: #EFE6DA;</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-      <widget class="QLabel" name="label_3">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>181</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 700 14pt &quot;Arial&quot;;
-color: rgb(0, 0, 0);</string>
-       </property>
-       <property name="text">
-        <string>Utilisateurs inactif:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_5">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>20</y>
-         <width>49</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(0, 0, 0);</string>
-       </property>
-       <property name="text">
-        <string>10</string>
-       </property>
-      </widget>
      </widget>
      <zorder>tableView_4</zorder>
      <zorder>tableView_2</zorder>
@@ -1237,9 +1009,6 @@ color: rgb(0, 0, 0);</string>
      <zorder>lblStatCircle</zorder>
      <zorder>tableWidget_3</zorder>
      <zorder>lineEdit_12</zorder>
-     <zorder>btnAjouter_3</zorder>
-     <zorder>btnSupprimer_3</zorder>
-     <zorder>pushButton_8</zorder>
      <zorder>pushButton_13</zorder>
      <zorder>lineEditSearch
 _2</zorder>
@@ -1251,9 +1020,8 @@ _2</zorder>
      <zorder>btnMateriaux</zorder>
      <zorder>btnSignout</zorder>
      <zorder>btnParametre</zorder>
-     <zorder>frame</zorder>
-     <zorder>frame_2</zorder>
-     <zorder>frame_3</zorder>
+     <zorder>user_modify</zorder>
+     <zorder>user_delete</zorder>
     </widget>
     <widget class="QWidget" name="pageFournisseur"/>
     <widget class="QWidget" name="pageCommande"/>
