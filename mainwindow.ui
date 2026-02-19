@@ -31,7 +31,7 @@
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>170</y>
+        <y>70</y>
         <width>281</width>
         <height>361</height>
        </rect>
@@ -441,7 +441,7 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>590</x>
-        <y>210</y>
+        <y>140</y>
         <width>821</width>
         <height>301</height>
        </rect>
@@ -729,8 +729,8 @@ background-color: #EFE6DA;</string>
      <widget class="QPushButton" name="pushButton_13">
       <property name="geometry">
        <rect>
-        <x>1230</x>
-        <y>120</y>
+        <x>1310</x>
+        <y>470</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -753,17 +753,18 @@ QPushButton:hover {
        <string>📄Exporter PDF</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEditSearch&#10;_2">
+     <widget class="QLineEdit" name="searchBar">
       <property name="geometry">
        <rect>
-        <x>650</x>
-        <y>130</y>
+        <x>600</x>
+        <y>70</y>
         <width>471</width>
         <height>41</height>
        </rect>
       </property>
       <property name="styleSheet">
        <string notr="true">QLineEdit {
+	color: rgb(0, 0, 0);
     background-color: #f6efe8;
     border: 1px solid #d2b48c;
     border-radius: 14px;
@@ -773,7 +774,7 @@ QPushButton:hover {
 </string>
       </property>
       <property name="text">
-       <string>🔍 Rechercher par nom ou contact </string>
+       <string>Recherche</string>
       </property>
       <property name="placeholderText">
        <string>Telephone</string>
@@ -783,7 +784,7 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>1150</x>
-        <y>170</y>
+        <y>90</y>
         <width>191</width>
         <height>31</height>
        </rect>
@@ -1010,8 +1011,7 @@ background-color: #D6B48A;</string>
      <zorder>tableWidget_3</zorder>
      <zorder>lineEdit_12</zorder>
      <zorder>pushButton_13</zorder>
-     <zorder>lineEditSearch
-_2</zorder>
+     <zorder>searchBar</zorder>
      <zorder>comboBox_4</zorder>
      <zorder>btnUser</zorder>
      <zorder>btnClient</zorder>

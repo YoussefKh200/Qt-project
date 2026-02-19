@@ -1,1 +1,0 @@
-Smart Carpentry Management Project

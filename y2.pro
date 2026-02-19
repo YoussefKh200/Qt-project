@@ -11,13 +11,17 @@ QMAKE_CXXFLAGS += -std=c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    connection.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    connection.h
 
 FORMS += \
     mainwindow.ui
+
+QT += sql
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

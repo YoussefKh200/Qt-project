@@ -45,6 +45,7 @@ private:
     void onTableRowSelected();
     void onValidateUserClicked();
     void exportToPDF();
+    void onSearchTextChanged(const QString &text);
     
 };
 

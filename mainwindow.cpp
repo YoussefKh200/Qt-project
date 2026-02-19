@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "connection.h"
 
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -20,6 +21,17 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    
+    // Initialize database connection
+    Connection conn;
+    if (conn.createconnect()) {
+        qDebug() << "Database connection successful!";
+    } else {
+        QMessageBox::critical(this, "Database Error", 
+                            "Failed to connect to the database.\nPlease check your connection settings.");
+        qDebug() << "Database connection failed!";
+    }
+    
     QPixmap pixModify(":/img/modify.png");
     ui->user_modify->setPixmap(pixModify);
     QPixmap pixDelete(":/img/delete.png");
@@ -68,6 +80,11 @@ void MainWindow::setupConnections()
 
     // Export PDF button
     connect(ui->pushButton_13, &QPushButton::clicked, this, &MainWindow::exportToPDF);
+
+    // Search functionality
+    connect(ui->lineEditSearch__2, &QLineEdit::textChanged, this, &MainWindow::onSearchTextChanged);
+    ui->lineEditSearch__2->setPlaceholderText("🔍 Rechercher par nom, prénom, tél ou mail...");
+    ui->lineEditSearch__2->clear();  // Clear the default text
 
     // Image buttons (Labels acting as buttons)
     ui->user_modify->setCursor(Qt::PointingHandCursor);
@@ -474,4 +491,48 @@ void MainWindow::exportToPDF()
 
     painter.end();
     QMessageBox::information(this, "Succès", "PDF exporté avec succès!");
+}
+
+void MainWindow::onSearchTextChanged(const QString &text)
+{
+    QString searchText = text.trimmed().toLower();
+    
+    // If search is empty, show all rows
+    if (searchText.isEmpty() || searchText.startsWith("🔍")) {
+        for (int i = 0; i < ui->tableWidget_3->rowCount(); i++) {
+            ui->tableWidget_3->setRowHidden(i, false);
+        }
+        return;
+    }
+    
+    // Filter rows based on nom, prenom, tel, mail (columns 0, 1, 2, 3)
+    for (int i = 0; i < ui->tableWidget_3->rowCount(); i++) {
+        bool matches = false;
+        
+        // Check nom (column 0)
+        QTableWidgetItem* nomItem = ui->tableWidget_3->item(i, 0);
+        if (nomItem && nomItem->text().toLower().contains(searchText)) {
+            matches = true;
+        }
+        
+        // Check prenom (column 1)
+        QTableWidgetItem* prenomItem = ui->tableWidget_3->item(i, 1);
+        if (prenomItem && prenomItem->text().toLower().contains(searchText)) {
+            matches = true;
+        }
+        
+        // Check tel (column 2)
+        QTableWidgetItem* telItem = ui->tableWidget_3->item(i, 2);
+        if (telItem && telItem->text().toLower().contains(searchText)) {
+            matches = true;
+        }
+        
+        // Check mail (column 3)
+        QTableWidgetItem* mailItem = ui->tableWidget_3->item(i, 3);
+        if (mailItem && mailItem->text().toLower().contains(searchText)) {
+            matches = true;
+        }
+        
+        ui->tableWidget_3->setRowHidden(i, !matches);
+    }
 }
