@@ -2,24 +2,26 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-CONFIG += c++17
-QMAKE_CXXFLAGS += -std=c++17
+CONFIG += c++1z
+QMAKE_CXXFLAGS += -std=c++1z
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    main.cpp \
-    mainwindow.cpp \
-    connection.cpp
+    view/main.cpp \
+    view/user.cpp \
+    connection/connection.cpp \
+    models/userCrud.cpp
 
 HEADERS += \
-    mainwindow.h \
-    connection.h
+    view/user.h \
+    connection/connection.h \
+    models/userCrud.h
 
 FORMS += \
-    mainwindow.ui
+    user.ui
 
 QT += sql
 

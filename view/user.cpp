@@ -1,6 +1,6 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "connection.h"
+#include "user.h"
+#include "ui_user.h"
+#include "../connection/connection.h"
 
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -16,16 +16,19 @@
 #include <QPageSize>
 
 
-MainWindow::MainWindow(QWidget *parent)
+UserWindow::UserWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::UserWindow)
+    , userCrud(nullptr)
+    , currentEditingRow(-1)
 {
     ui->setupUi(this);
     
     // Initialize database connection
-    Connection conn;
-    if (conn.createconnect()) {
+    Connection* conn = Connection::instance();
+    if (conn->createConnect()) {
         qDebug() << "Database connection successful!";
+        userCrud = new UserCrud();
     } else {
         QMessageBox::critical(this, "Database Error", 
                             "Failed to connect to the database.\nPlease check your connection settings.");
@@ -44,15 +47,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_3->setRowCount(0);
     
     setupConnections();
+    loadAllUsersFromDB();
     updateButtonStates();
 }
 
-MainWindow::~MainWindow()
+UserWindow::~UserWindow()
 {
+    delete userCrud;
     delete ui;
 }
 
-void MainWindow::setupConnections()
+void UserWindow::setupConnections()
 {
     // Navigation buttons
     connect(ui->btnUser, &QPushButton::clicked, this, [this]() {
@@ -76,26 +81,26 @@ void MainWindow::setupConnections()
     });
 
     // Form buttons
-    connect(ui->pushButton_12, &QPushButton::clicked, this, &MainWindow::onValidateUserClicked);
+    connect(ui->pushButton_12, &QPushButton::clicked, this, &UserWindow::onValidateUserClicked);
 
     // Export PDF button
-    connect(ui->pushButton_13, &QPushButton::clicked, this, &MainWindow::exportToPDF);
+    connect(ui->pushButton_13, &QPushButton::clicked, this, &UserWindow::exportToPDF);
 
     // Search functionality
-    connect(ui->lineEditSearch__2, &QLineEdit::textChanged, this, &MainWindow::onSearchTextChanged);
-    ui->lineEditSearch__2->setPlaceholderText("🔍 Rechercher par nom, prénom, tél ou mail...");
-    ui->lineEditSearch__2->clear();  // Clear the default text
+    connect(ui->searchBar, &QLineEdit::textChanged, this, &UserWindow::onSearchTextChanged);
+    ui->searchBar->setPlaceholderText("");
+    ui->searchBar->clear();  // Clear the default text
 
     // Image buttons (Labels acting as buttons)
     ui->user_modify->setCursor(Qt::PointingHandCursor);
     ui->user_delete->setCursor(Qt::PointingHandCursor);
 
     // Table selection
-    connect(ui->tableWidget_3, &QTableWidget::cellClicked, this, &MainWindow::onTableRowSelected);
-    connect(ui->tableWidget_3, &QTableWidget::itemSelectionChanged, this, &MainWindow::updateButtonStates);
+    connect(ui->tableWidget_3, &QTableWidget::cellClicked, this, &UserWindow::onTableRowSelected);
+    connect(ui->tableWidget_3, &QTableWidget::itemSelectionChanged, this, &UserWindow::updateButtonStates);
 }
 
-void MainWindow::clearForm()
+void UserWindow::clearForm()
 {
     ui->lineEdit_7->clear();  // nom
     ui->lineEdit_8->clear();  // prenom
@@ -110,13 +115,30 @@ void MainWindow::clearForm()
     currentEditingRow = -1;
 }
 
-void MainWindow::addUserToTable(const User &user)
+void UserWindow::loadAllUsersFromDB()
+{
+    if (!userCrud) return;
+    
+    ui->tableWidget_3->setRowCount(0);
+    QList<UserData> users = userCrud->getAllUsers();
+    
+    for (const UserData &user : users) {
+        addUserToTable(user);
+    }
+}
+
+void UserWindow::addUserToTable(const UserData &user)
 {
     int row = ui->tableWidget_3->rowCount();
     ui->tableWidget_3->insertRow(row);
 
+    // Store the user ID in column 0 (hidden or for reference)
+    QTableWidgetItem *idItem = new QTableWidgetItem(QString::number(user.id));
+    idItem->setData(Qt::UserRole, user.id); // Store ID in UserRole
+    ui->tableWidget_3->setItem(row, 0, idItem);
+    
     // Add user data to each column
-    ui->tableWidget_3->setItem(row, 0, new QTableWidgetItem(user.nom));
+    ui->tableWidget_3->item(row, 0)->setText(user.nom); // Override with nom but keep ID in UserRole
     ui->tableWidget_3->setItem(row, 1, new QTableWidgetItem(user.prenom));
     ui->tableWidget_3->setItem(row, 2, new QTableWidgetItem(user.tel));
     ui->tableWidget_3->setItem(row, 3, new QTableWidgetItem(user.mail));
@@ -181,7 +203,7 @@ void MainWindow::addUserToTable(const User &user)
     clearForm();
 }
 
-void MainWindow::loadUserToForm(int row)
+void UserWindow::loadUserToForm(int row)
 {
     if (row < 0 || row >= ui->tableWidget_3->rowCount()) return;
 
@@ -207,7 +229,7 @@ void MainWindow::loadUserToForm(int row)
     currentEditingRow = row;
 }
 
-void MainWindow::updateButtonStates()
+void UserWindow::updateButtonStates()
 {
     // Enable/disable modify and delete buttons based on selection
     bool hasSelection = ui->tableWidget_3->currentRow() >= 0;
@@ -219,89 +241,9 @@ void MainWindow::updateButtonStates()
     ui->user_delete->setStyleSheet(hasSelection ? "" : "opacity: 0.5;");
 }
 
-void MainWindow::onValidateUserClicked()
+UserData UserWindow::getUserDataFromForm() const
 {
-    // Validate form fields
-    if (ui->lineEdit_7->text().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez remplir le nom");
-        return;
-    }
-
-    if (ui->lineEdit_8->text().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez remplir le prénom");
-        return;
-    }
-
-    if (ui->lineEdit_9->text().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez remplir le téléphone");
-        return;
-    }
-
-    // Validate TEL: must be exactly 8 digits
-    QString tel = ui->lineEdit_9->text();
-    if (tel.length() != 8) {
-        QMessageBox::warning(this, "Erreur", "Le téléphone doit contenir exactement 8 chiffres");
-        return;
-    }
-    
-    bool telOk;
-    tel.toLongLong(&telOk);
-    if (!telOk) {
-        QMessageBox::warning(this, "Erreur", "Le téléphone doit contenir uniquement des chiffres");
-        return;
-    }
-
-    if (ui->lineEdit_10->text().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez remplir le mail");
-        return;
-    }
-
-    // Validate MAIL: must contain @ and valid domain
-    QString mail = ui->lineEdit_10->text();
-    if (!mail.contains("@") || !mail.contains(".")) {
-        QMessageBox::warning(this, "Erreur", "Le mail doit être au format valide (ex: exemple@gmail.com)");
-        return;
-    }
-    
-    int atIndex = mail.indexOf("@");
-    int dotIndex = mail.lastIndexOf(".");
-    if (atIndex <= 0 || dotIndex <= atIndex + 1 || dotIndex == mail.length() - 1) {
-        QMessageBox::warning(this, "Erreur", "Le mail doit être au format valide (ex: exemple@gmail.com)");
-        return;
-    }
-
-    if (ui->lineEdit_11->text().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez remplir le mot de passe");
-        return;
-    }
-
-    if (ui->lineEdit_13->text().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez remplir le salaire");
-        return;
-    }
-
-    // Validate SALAIRE: must be a valid number (int or float)
-    QString salaire = ui->lineEdit_13->text();
-    bool ok;
-    salaire.toDouble(&ok);
-    if (!ok) {
-        QMessageBox::warning(this, "Erreur", "Le salaire doit être un nombre valide (ex: 1500 ou 1500.50)");
-        return;
-    }
-
-    // Validate ROLE: must be selected
-    if (ui->comboBox->currentIndex() < 0 || ui->comboBox->currentText().isEmpty()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un rôle");
-        return;
-    }
-
-    // Validate ETAT: at least one checkbox must be checked
-    if (!ui->checkBox->isChecked() && !ui->checkBox_2->isChecked()) {
-        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un état (actif ou non actif)");
-        return;
-    }
-
-    User user;
+    UserData user;
     user.nom = ui->lineEdit_7->text();
     user.prenom = ui->lineEdit_8->text();
     user.tel = ui->lineEdit_9->text();
@@ -310,29 +252,57 @@ void MainWindow::onValidateUserClicked()
     user.salaire = ui->lineEdit_13->text();
     user.role = ui->comboBox->currentText();
     user.etat = ui->checkBox->isChecked() ? "actif" : "non actif";
+    return user;
+}
+
+void UserWindow::onValidateUserClicked()
+{
+    if (!userCrud) {
+        QMessageBox::critical(this, "Erreur", "Connexion à la base de données non disponible");
+        return;
+    }
+
+    UserData user = getUserDataFromForm();
+    QString error;
 
     if (currentEditingRow >= 0) {
         // Update existing user
-        ui->tableWidget_3->item(currentEditingRow, 0)->setText(user.nom);
-        ui->tableWidget_3->item(currentEditingRow, 1)->setText(user.prenom);
-        ui->tableWidget_3->item(currentEditingRow, 2)->setText(user.tel);
-        ui->tableWidget_3->item(currentEditingRow, 3)->setText(user.mail);
-        ui->tableWidget_3->item(currentEditingRow, 4)->setText(user.mdp);
-        ui->tableWidget_3->item(currentEditingRow, 5)->setText(user.salaire);
-        ui->tableWidget_3->item(currentEditingRow, 6)->setText(user.role);
-        ui->tableWidget_3->item(currentEditingRow, 7)->setText(user.etat);
-        QMessageBox::information(this, "Succès", "Utilisateur modifié avec succès!");
+        QTableWidgetItem *item = ui->tableWidget_3->item(currentEditingRow, 0);
+        if (item) {
+            user.id = item->data(Qt::UserRole).toInt();
+            
+            if (userCrud->updateUser(user, error)) {
+                // Update UI
+                ui->tableWidget_3->item(currentEditingRow, 0)->setText(user.nom);
+                ui->tableWidget_3->item(currentEditingRow, 0)->setData(Qt::UserRole, user.id);
+                ui->tableWidget_3->item(currentEditingRow, 1)->setText(user.prenom);
+                ui->tableWidget_3->item(currentEditingRow, 2)->setText(user.tel);
+                ui->tableWidget_3->item(currentEditingRow, 3)->setText(user.mail);
+                ui->tableWidget_3->item(currentEditingRow, 4)->setText(user.mdp);
+                ui->tableWidget_3->item(currentEditingRow, 5)->setText(user.salaire);
+                ui->tableWidget_3->item(currentEditingRow, 6)->setText(user.role);
+                ui->tableWidget_3->item(currentEditingRow, 7)->setText(user.etat);
+                QMessageBox::information(this, "Succès", "Utilisateur modifié avec succès!");
+                clearForm();
+            } else {
+                QMessageBox::warning(this, "Erreur", error);
+            }
+        }
     } else {
         // Add new user
-        addUserToTable(user);
-        QMessageBox::information(this, "Succès", "Utilisateur ajouté avec succès!");
+        if (userCrud->addUser(user, error)) {
+            loadAllUsersFromDB();
+            QMessageBox::information(this, "Succès", "Utilisateur ajouté avec succès!");
+            clearForm();
+        } else {
+            QMessageBox::warning(this, "Erreur", error);
+        }
     }
 
-    clearForm();
     updateButtonStates();
 }
 
-void MainWindow::onTableRowSelected()
+void UserWindow::onTableRowSelected()
 {
     int row = ui->tableWidget_3->currentRow();
     if (row >= 0) {
@@ -341,7 +311,7 @@ void MainWindow::onTableRowSelected()
     updateButtonStates();
 }
 
-void MainWindow::onModifyUserClicked()
+void UserWindow::onModifyUserClicked()
 {
     int row = ui->tableWidget_3->currentRow();
     if (row >= 0) {
@@ -352,27 +322,49 @@ void MainWindow::onModifyUserClicked()
     }
 }
 
-void MainWindow::onDeleteUserClicked()
+void UserWindow::onDeleteUserClicked()
 {
     int row = ui->tableWidget_3->currentRow();
-    if (row >= 0) {
-        QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirmation",
-            "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
-            QMessageBox::Yes | QMessageBox::No);
-        
-        if (reply == QMessageBox::Yes) {
-            ui->tableWidget_3->removeRow(row);
-            clearForm();
-            updateButtonStates();
-            QMessageBox::information(this, "Succès", "Utilisateur supprimé avec succès!");
-            qDebug() << "Deleted row:" << row;
-        }
-    } else {
+    if (row < 0) {
         QMessageBox::warning(this, "Erreur", "Veuillez sélectionner un utilisateur à supprimer");
+        return;
+    }
+
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Confirmation",
+        "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
+        QMessageBox::Yes | QMessageBox::No);
+    
+    if (reply != QMessageBox::Yes) {
+        return;
+    }
+    
+    if (!userCrud) {
+        QMessageBox::critical(this, "Erreur", "Connexion à la base de données non disponible");
+        return;
+    }
+    
+    // Get user ID from table
+    QTableWidgetItem *item = ui->tableWidget_3->item(row, 0);
+    if (!item) {
+        QMessageBox::critical(this, "Erreur", "Impossible de récupérer les données de l'utilisateur");
+        return;
+    }
+    
+    int userId = item->data(Qt::UserRole).toInt();
+    QString error;
+    
+    if (userCrud->deleteUser(userId, error)) {
+        ui->tableWidget_3->removeRow(row);
+        clearForm();
+        updateButtonStates();
+        QMessageBox::information(this, "Succès", "Utilisateur supprimé avec succès!");
+        qDebug() << "Deleted user ID:" << userId;
+    } else {
+        QMessageBox::warning(this, "Erreur", error);
     }
 }
 
-void MainWindow::exportToPDF()
+void UserWindow::exportToPDF()
 {
     // Check if table has any data
     if (ui->tableWidget_3->rowCount() == 0) {
@@ -493,46 +485,30 @@ void MainWindow::exportToPDF()
     QMessageBox::information(this, "Succès", "PDF exporté avec succès!");
 }
 
-void MainWindow::onSearchTextChanged(const QString &text)
+void UserWindow::onSearchTextChanged(const QString &text)
 {
-    QString searchText = text.trimmed().toLower();
+    if (!userCrud) return;
     
-    // If search is empty, show all rows
-    if (searchText.isEmpty() || searchText.startsWith("🔍")) {
-        for (int i = 0; i < ui->tableWidget_3->rowCount(); i++) {
-            ui->tableWidget_3->setRowHidden(i, false);
-        }
-        return;
+    QString searchText = text.trimmed();
+    
+    // Remove placeholder emoji if present
+    if (searchText.startsWith("🔍")) {
+        searchText = searchText.mid(1).trimmed();
     }
     
-    // Filter rows based on nom, prenom, tel, mail (columns 0, 1, 2, 3)
-    for (int i = 0; i < ui->tableWidget_3->rowCount(); i++) {
-        bool matches = false;
-        
-        // Check nom (column 0)
-        QTableWidgetItem* nomItem = ui->tableWidget_3->item(i, 0);
-        if (nomItem && nomItem->text().toLower().contains(searchText)) {
-            matches = true;
-        }
-        
-        // Check prenom (column 1)
-        QTableWidgetItem* prenomItem = ui->tableWidget_3->item(i, 1);
-        if (prenomItem && prenomItem->text().toLower().contains(searchText)) {
-            matches = true;
-        }
-        
-        // Check tel (column 2)
-        QTableWidgetItem* telItem = ui->tableWidget_3->item(i, 2);
-        if (telItem && telItem->text().toLower().contains(searchText)) {
-            matches = true;
-        }
-        
-        // Check mail (column 3)
-        QTableWidgetItem* mailItem = ui->tableWidget_3->item(i, 3);
-        if (mailItem && mailItem->text().toLower().contains(searchText)) {
-            matches = true;
-        }
-        
-        ui->tableWidget_3->setRowHidden(i, !matches);
+    // Clear table
+    ui->tableWidget_3->setRowCount(0);
+    
+    // Reload data based on search
+    QList<UserData> users;
+    if (searchText.isEmpty()) {
+        users = userCrud->getAllUsers();
+    } else {
+        users = userCrud->searchUsers(searchText);
+    }
+    
+    // Populate table with results
+    for (const UserData &user : users) {
+        addUserToTable(user);
     }
 }
